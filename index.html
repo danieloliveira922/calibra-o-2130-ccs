@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#174b2b"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Calibração 2130"><link rel="icon" type="image/png" sizes="192x192" href="icon-192.png"><link rel="apple-touch-icon" href="icon-512.png">
+<title>Calibração John Deere 2130 CCS</title>
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{font-family:Arial,sans-serif;color:#17251b;background:#f3f6f3}*{box-sizing:border-box}
+body{margin:0} input{min-height:48px} button{min-height:48px;flex:1} .card{padding:18px} main{padding:10px}header{background:#174b2b;color:white;padding:20px 16px}
+h1{font-size:22px;margin:0 0 5px}header p{margin:0;font-size:13px;opacity:.9}
+main{max-width:760px;margin:auto;padding:14px}.card{background:white;border-radius:14px;padding:16px;margin:12px 0;box-shadow:0 2px 10px #0000000c}
+h2{font-size:17px;margin:0 0 12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:block;font-size:12px;color:#506057;margin-bottom:5px}
+input{width:100%;padding:12px;border:1px solid #cbd5ce;border-radius:9px;font-size:17px}
+.result{background:#eaf4ec;border-radius:10px;padding:12px;margin-top:10px}
+.big{font-size:26px;font-weight:bold;color:#174b2b}.muted{font-size:12px;color:#5c6b61}
+button{border:0;border-radius:9px;padding:12px 15px;background:#174b2b;color:white;font-size:15px;font-weight:bold}
+button.secondary{background:#e7eee8;color:#174b2b}.actions{display:flex;gap:8px;flex-wrap:wrap}
+.note{font-size:12px;line-height:1.45;color:#58645c}.warn{color:#8b4a00}
+@media(max-width:440px){.grid{grid-template-columns:1fr 1fr}}
+</style></head>
+<body>
+<header><h1>Calibração de Plantadeira</h1><p>John Deere 2130 CCS • ferramenta de apoio para uso no campo</p></header>
+<main>
+<div class="card">
+<h2>1. Dados da plantadeira e da aplicação</h2>
+<div class="grid">
+<div><label>Dose de adubo (kg/ha)</label><input id="dose" type="number" step="any" value="170"></div>
+<div><label>Espaçamento entre linhas (m)</label><input id="spacing" type="number" step="any" value="0.50"></div>
+<div><label>Número de linhas</label><input id="rows" type="number" step="1" value="26"></div>
+<div><label>Distância do teste (m)</label><input id="distance" type="number" step="any" value="50"></div>
+</div>
+<div class="result"><div class="muted">Adubo esperado por metro linear</div><div class="big" id="perMeter">8,50 g/m</div>
+<div class="muted">Por linha no teste</div><strong id="perRow">425 g</strong><br>
+<div class="muted">Total esperado em todas as linhas</div><div class="big" id="expected">11,05 kg</div></div>
+</div>
+<div class="card">
+<h2>2. Conferência da coleta</h2>
+<div><label>Total realmente coletado em todas as linhas (kg)</label><input id="actual" type="number" step="any" placeholder="Informe o peso coletado"></div>
+<div class="result"><div class="muted">Fator de correção (esperado ÷ coletado)</div><div class="big" id="factor">—</div><strong id="adjustment">Informe a coleta para calcular.</strong><p class="note" id="percent"></p></div>
+</div>
+<div class="card">
+<h2>3. Relação de engrenagens (referência)</h2>
+<div class="grid">
+<div><label>Dentes da engrenagem motriz</label><input id="driver" type="number" value="24"></div>
+<div><label>Dentes da engrenagem movida</label><input id="driven" type="number" value="36"></div>
+</div>
+<div class="result"><div class="muted">Relação simples (motriz ÷ movida)</div><div class="big" id="ratio">0,6667</div>
+<div class="muted">Relação teórica corrigida*</div><strong id="corrected">—</strong></div>
+<p class="note warn">*A relação real da transmissão pode ter mais de um estágio e inverter o efeito sobre a dosagem. Use este número apenas como referência matemática. Confirme a configuração no manual da máquina e valide qualquer ajuste com nova coleta.</p>
+</div>
+<div class="card">
+<div class="actions"><button onclick="window.print()">Imprimir / salvar em PDF</button><button class="secondary" onclick="resetAll()">Restaurar exemplo</button></div>
+<p class="note">Os cálculos são feitos neste aparelho. Esta versão não envia nem salva dados em servidor. Anote ou salve o relatório antes de fechar.</p>
+<p class="note">Fórmula: g/m = dose (kg/ha) × espaçamento (m) ÷ 10. Peso por linha = g/m × distância do teste ÷ 1.000.</p>
+</div>
+</main>
+<script>
+const ids=['dose','spacing','rows','distance','actual','driver','driven'];
+const n=id=>Number(document.getElementById(id).value);
+const fmt=(v,d=2)=>Number.isFinite(v)?v.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d}):'—';
+function calc(){
+ const dose=n('dose'),s=n('spacing'),rows=n('rows'),dist=n('distance');
+ const valid=[dose,s,rows,dist].every(Number.isFinite)&&dose>0&&s>0&&rows>0&&dist>0;
+ const gm=valid?dose*s/10:NaN, row=gm*dist/1000, total=row*rows;
+ document.getElementById('perMeter').textContent=valid?fmt(gm,2)+' g/m':'—';
+ document.getElementById('perRow').textContent=valid?fmt(row*1000,0)+' g':'—';
+ document.getElementById('expected').textContent=valid?fmt(total,2)+' kg':'—';
+ const actual=n('actual'), f=valid&&actual>0?total/actual:NaN;
+ document.getElementById('factor').textContent=Number.isFinite(f)?fmt(f,4):'—';
+ document.getElementById('adjustment').textContent=Number.isFinite(f)?(f>1.001?'Aumentar a distribuição em aproximadamente '+fmt((f-1)*100,2)+'%.':f<.999?'Reduzir a distribuição em aproximadamente '+fmt((1-f)*100,2)+'%.':'Coleta dentro de aproximadamente 0,1% do alvo.'):'Informe a coleta para calcular.';
+ document.getElementById('percent').textContent=Number.isFinite(f)?'Fator = '+fmt(total,3)+' kg ÷ '+fmt(actual,3)+' kg.':'';
+ const dr=n('driver'),dn=n('driven'),ratio=dr>0&&dn>0?dr/dn:NaN;
+ document.getElementById('ratio').textContent=Number.isFinite(ratio)?fmt(ratio,4):'—';
+ document.getElementById('corrected').textContent=Number.isFinite(ratio)&&Number.isFinite(f)?fmt(ratio*f,4):'—';
+}
+function resetAll(){document.getElementById('dose').value=170;document.getElementById('spacing').value=.5;document.getElementById('rows').value=26;document.getElementById('distance').value=50;document.getElementById('actual').value='';document.getElementById('driver').value=24;document.getElementById('driven').value=36;calc()}
+ids.forEach(id=>{
+  const el=document.getElementById(id);
+  const saved=localStorage.getItem('calibracao_'+id);
+  if(saved!==null) el.value=saved;
+  el.addEventListener('input',()=>{
+    localStorage.setItem('calibracao_'+id,el.value);
+    calc();
+  });
+});
+const originalReset=resetAll;
+resetAll=function(){
+  originalReset();
+  ids.forEach(id=>localStorage.setItem('calibracao_'+id,document.getElementById(id).value));
+};
+calc();
+if('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(err=>console.warn('Offline indisponível:',err)));
+}
+</script></body></html>

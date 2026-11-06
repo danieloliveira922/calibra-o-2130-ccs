@@ -1,0 +1,25 @@
+{
+  "name": "Calibração de Plantadeira John Deere 2130 CCS",
+  "short_name": "Calibração 2130",
+  "description": "Calculadora de calibração de adubo para plantadeira John Deere 2130 CCS.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f3f6f3",
+  "theme_color": "#174b2b",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

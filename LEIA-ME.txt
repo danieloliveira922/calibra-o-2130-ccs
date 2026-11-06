@@ -1,0 +1,18 @@
+CALIBRAÇÃO JOHN DEERE 2130 CCS — PACOTE PWA
+
+Conteúdo:
+- index.html: calculadora original com gravação local dos campos preenchidos.
+- manifest.webmanifest: identificação e ícones do aplicativo.
+- sw.js: cache dos arquivos para abrir sem internet após a primeira visita online.
+- icon-192.png e icon-512.png: ícones do aplicativo.
+
+INSTALAÇÃO:
+1. Publique todos os arquivos juntos em um endereço HTTPS (por exemplo, hospedagem estática).
+2. Abra esse endereço no Chrome do Android e aguarde carregar uma vez com internet.
+3. No menu do Chrome, escolha "Instalar app" ou "Adicionar à tela inicial", conforme aparecer.
+4. O aplicativo abrirá em janela própria e poderá carregar offline depois do primeiro acesso.
+
+LIMITAÇÕES:
+- Os cálculos e os campos ficam no próprio aparelho; os campos são gravados localmente.
+- Não existe servidor nem sincronização entre aparelhos nesta versão.
+- A relação de engrenagens continua sendo apenas referência matemática, como indicado no arquivo original.
